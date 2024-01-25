@@ -1,6 +1,6 @@
 # ocraccount240114
 
-application ndoe d'analyse de facture/devis
+application nodeJS d'analyse de facture/devis
 
 Pour uiliser lancer la commande `npm start`
 
