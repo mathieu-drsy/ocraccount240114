@@ -85,8 +85,8 @@ block content
                     td(data-bind='text: sender')
                     td(data-bind='text: customer')
                     td
-                      a(data-bind='text: articles === null ? "Aucun article" : "Articles", attr: { class : articles === null ? "" : "btn btn-primary", href: "#Articles"+ id +username}' data-toggle='collapse')
-                      div.row.collapse.hide(data-bind='attr{id:  "#Articles"+id+username}')
+                      a(data-bind='text: articles === null ? "Aucun article" : "Articles", attr: { class : articles === null ? "" : "btn btn-primary", href: "#Articles" + id + username }' data-toggle='collapse')
+                      div.row.collapse.hide(data-bind='attr: { id: "Articles" + id + username}')
                         div(data-bind='foreach: $data["articles"]')
                           div.card
                             span(data-bind='text: "Description : "+description')
