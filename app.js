@@ -64,7 +64,6 @@ app.post('/analyzeInvoice', upload.single('invoiceImage'), async (req, res) => {
                 // Use pdf-parse to extract text from PDF
                 const pdfData = await pdf(imageBuffer);
                 text = processPdfText(pdfData.text);
-                console.log(text);
             } else {
                 // Use OCR service for image files
                 text = await ocrService.performOCR(imageBuffer);
