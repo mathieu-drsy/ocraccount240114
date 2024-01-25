@@ -1,11 +1,10 @@
-const { v4: uuidv4 } = require('uuid');
 var express = require('express');
 var app = express();
 var path = require('path');
 const cors = require('cors');
 const multer = require('multer');
 const invoiceModel = require('./models/invoiceModel');
-const ocrService = require('./ocr/ocrservice');
+const ocrService = require('./ocr/ocrService');
 const pdf = require('pdf-parse');
 
 var config = require('config');
@@ -96,6 +95,8 @@ function processPdfText(text) {
     text = text.replace("FACTURE", " FACTURE");
     return text.replace(/([A-Za-z])(\d)/g, '$1 $2');
 }
+
+
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
