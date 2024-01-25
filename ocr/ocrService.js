@@ -1,4 +1,5 @@
 const Tesseract = require('tesseract.js');
+const { v4: uuidv4 } = require('uuid');
 
 function performOCR(imagePath) {
     return new Promise((resolve, reject) => {
@@ -30,8 +31,10 @@ function extractInvoiceInfo(ocrText , name, id) {
     const articles = extractArticles(ocrText);
     const totalWithTaxes = extractTotalWithTaxes(ocrText);
     const totalWithoutTaxes = extractTotalWithoutTaxes(ocrText);
+    const uuid = getUUID();
 
     return {
+        uuid,
         id,
         username,
         creationDate,
@@ -132,6 +135,9 @@ function extractCustomerName(ocrText) {
     return customerMatch ? customerMatch[1].trim() : undefined;
 }
 
+function getUUID(){
+    return uuidv4();
+}
 
 module.exports = {
     performOCR,
