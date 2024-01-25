@@ -1,0 +1,101 @@
+include template.pug
+
+script(src="../scripts/knockout.collapse.js" type="text/javascript")
+script.
+    var invoices = !{JSON.stringify(invoices)};
+    const userMap = {};
+    const address = !{JSON.stringify(address)};
+    function refresh() {
+      window.location.href=address+'/';
+    }
+
+   function invoiceSort(invoices) {
+    return invoices.sort((a, b) => {
+        const dateA = a.creationDate ? parseDate(a.creationDate) : null;
+        const dateB = b.creationDate ? parseDate(b.creationDate) : null;
+
+        if (dateA === null && dateB === null) {
+          return 0; // If both dates are null, consider them equal
+        } else if (dateA === null) {
+          return 1; // Null dates should come after non-null dates
+        } else if (dateB === null) {
+          return -1; // Non-null dates should come before null dates
+        }
+
+        return dateB - dateA;
+      });
+    }
+
+    function parseDate(dateString) {
+      const [day, month, year] = dateString.split('/');
+      return new Date(`${year}-${month}-${day}`);
+    }
+
+    //creer la liste trié par username et trié par date
+    invoices = invoices.reduce((accumulator, current) => {
+      const username = current.username;
+      if (userMap[username]) {
+        userMap[username].invoices.push(current);
+        userMap[username].invoices = invoiceSort(userMap[username].invoices);
+      } else {
+        const newUser = { username, invoices: [current] };
+        userMap[username] = newUser;
+        accumulator.push(newUser);
+      }
+      
+      
+      return accumulator;
+    }, []);
+    
+    document.addEventListener('DOMContentLoaded', function() {    
+      
+      var viewModel = function() {
+          var self = this;
+          self.invoices = ko.observableArray(invoices);
+      };
+      console.log((invoices));
+      ko.applyBindings(viewModel);   
+      
+    });
+  
+
+
+block content
+  if typeof invoices !== 'undefined' && invoices.length > 0
+    div.row.text-center.mx-auto.col-10.container
+      div(data-bind='foreach: invoices').container
+          //- ACCORDION BEGIN
+          #accordion
+            .card
+              .card-header
+                a.card-link.col-10(data-toggle='collapse', data-bind='text: username, attr: { href: "#"+username}')
+            div.collapse.hide.col-10(data-bind='attr: { id: username}')  
+              table.table.table-striped.table-bordered
+                thead
+                  tr
+                    th Date de création
+                    th Envoyeur
+                    th Client
+                    th Articles
+                    th HT
+                    th TTC
+                tbody(data-bind='foreach: $data["invoices"]')
+                  tr
+                    td(data-bind='text: creationDate')
+                    td(data-bind='text: sender')
+                    td(data-bind='text: customer')
+                    td
+                      a(data-bind='text: articles === null ? "Aucun article" : "Articles", attr: { class : articles === null ? "" : "btn btn-primary", href: "#Articles"+ id +username}' data-toggle='collapse')
+                      div.row.collapse.hide(data-bind='attr{id:  "#Articles"+id+username}')
+                        div(data-bind='foreach: $data["articles"]')
+                          div.card
+                            span(data-bind='text: "Description : "+description')
+                            span(data-bind='text: "prix : "+price')
+                    td(data-bind='text: totalWithoutTaxes')
+                    td(data-bind='text: totalWithTaxes')
+      div.w-100
+      br
+      button.mx-auto.btn.btn-primary#refreshButton(type="button" onclick="refresh()") Raffraichir
+  else
+    p.text-center Pas de facture disponible
+

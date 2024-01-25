@@ -1,0 +1,58 @@
+head 
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            // Your login button
+            const loginButton = document.getElementById('loginButton');
+            // Your modal
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+
+            // Your login form inputs and submit button
+            const usernameInput = document.getElementById('username');
+            const loginSubmitButton = document.getElementById('loginSubmit');
+            const usernameField = document.getElementById('usernameField');
+            
+            // Check if username is stored in local storage
+            const storedUsername = localStorage.getItem('username');
+            if (storedUsername) {
+                // Display logged-in username on the login button
+                loginButton.textContent = `Bienvenue, ${storedUsername}`;
+                usernameInput.value = storedUsername;
+                if(usernameField){usernameField.value = storedUsername;}
+            }
+
+            // Open the modal when the login button is clicked
+            loginButton.addEventListener('click', function() {
+                loginModal.show();
+            });
+
+            // Handle the login logic when the submit button is clicked
+            loginSubmitButton.addEventListener('click', function() {
+            const username = usernameInput.value;
+            if (username) {
+                // Log in the user
+                console.log(`User logged in: ${username}`);
+                // Store username in local storage
+                localStorage.setItem('username', username);
+                // Display logged-in username on the login button
+                loginButton.textContent = `Bienvenue, ${username}`;
+                // Close the modal
+                loginModal.hide();
+            } else {
+                // Handle invalid input or show an error message
+                console.log('Invalid username');
+            }
+            });
+        });
+
+body
+    div#loginModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='loginModalLabel', aria-hidden='true')
+        div.modal-dialog(role='document')
+            div.modal-content
+                div.modal-header
+                    h5.modal-title#loginModalLabel Login
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                div.modal-body
+                    // Add your login form inputs here
+                    input#username(type='text', placeholder='Username')
+                    button#loginSubmit(type='button') Log In

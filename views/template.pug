@@ -1,0 +1,15 @@
+doctype html
+html(lang='en')
+	head
+		include navigator.pug
+	body
+		main.container(role='main')
+			block content
+		
+		// /.container
+		//
+			Bootstrap core JavaScript
+			==================================================
+		// Placed at the end of the document so the pages load faster
+		include import.pug
+		block scripts

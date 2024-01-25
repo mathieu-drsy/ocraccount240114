@@ -1,0 +1,41 @@
+include template.pug
+head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    
+body.text-center
+  h1 Analyseur de facture
+  // Add form for uploading an image file
+  form(id="uploadForm" enctype="multipart/form-data")
+    h2 Charger le fichier
+    input(type="file" name="invoiceImage" accept=".jpg, .jpeg, .png, .pdf")
+    input(type="hidden" name="username" id="usernameField")
+    button(type="button" id="submitButton") Soumettre
+  div(id="successMessageContainer")
+
+script.
+  $(document).ready(function() {
+    const address = !{JSON.stringify(address)};
+    $('#submitButton').on('click', function(event) {
+      event.preventDefault();
+      var form = $('#uploadForm')[0];
+      var formData = new FormData(form);
+      $.ajax({
+        url: address+"/analyzeInvoice",
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          // Handle the success response
+          console.log(response);
+          $('#successMessageContainer').text('Fichier reçue');
+        },
+        error: function(error) {
+          // Handle errors here
+          console.error('Error:', error);
+        }
+      });
+    });
+  });
