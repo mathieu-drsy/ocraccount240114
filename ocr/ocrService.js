@@ -10,6 +10,18 @@ function performOCR(imagePath) {
                 logger: (info) => {
                     console.log(info);
                 },
+                tessedit_char_whitelist: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,/-€',
+                // Apply image preprocessing options
+                preprocess: [
+                    // Remove background noise and smooth the image
+                    'remove_background',
+                    // Scale the image to improve OCR accuracy
+                    'scale_to_gray',
+                    // Binarize the image using adaptive thresholding
+                    'adaptive_threshold',
+                    // Apply mean denoising to the image
+                    'denoise',
+                ],
             }
         )
             .then(({ data }) => {
@@ -22,7 +34,7 @@ function performOCR(imagePath) {
     });
 }
 
-function extractInvoiceInfo(ocrText , name, id) {
+function extractInvoiceInfo(ocrText, name, id, text) {
     // Implement logic to extract specific information from OCR text
     const username = name || 'DefaultUsername';
     const creationDate = extractCreationDate(ocrText);
@@ -34,16 +46,18 @@ function extractInvoiceInfo(ocrText , name, id) {
     const uuid = getUUID();
 
     return {
-        uuid,
-        id,
-        username,
-        creationDate,
-        sender,
-        customer,
-        articles,
-        totalWithTaxes,
-        totalWithoutTaxes,
+        uuid: uuid ?? null,
+        id: id ?? null,
+        username: username ?? null,
+        creationDate: creationDate ?? null,
+        sender: sender ?? null,
+        customer: customer ?? null,
+        articles: articles ?? null,
+        totalWithTaxes: totalWithTaxes ?? null,
+        totalWithoutTaxes: totalWithoutTaxes ?? null,
+        text: text ?? null,
     };
+
 }
 
 function extractCreationDate(ocrText) {
@@ -135,7 +149,7 @@ function extractCustomerName(ocrText) {
     return customerMatch ? customerMatch[1].trim() : undefined;
 }
 
-function getUUID(){
+function getUUID() {
     return uuidv4();
 }
 

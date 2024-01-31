@@ -50,39 +50,43 @@ var server = app.listen(microserviceConfig.port, microserviceConfig.host, functi
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
 app.post('/analyzeInvoice', upload.single('invoiceImage'), async (req, res) => {
-    res.status(200).send('Fichier reçue');
     try {
-        const user = req.body.username ? req.body.username : "defaultUser";
-        var invoiceInfo = undefined;
-        if (req.file != undefined) {
-            const imageBuffer = req.file.buffer;
-            let text;
+        res.status(200).send('Fichier reçue');
 
-            // Check if the uploaded file is a PDF
-            if (req.file.mimetype === 'application/pdf') {
-                // Use pdf-parse to extract text from PDF
-                const pdfData = await pdf(imageBuffer);
-                text = processPdfText(pdfData.text);
-            } else {
-                // Use OCR service for image files
-                text = await ocrService.performOCR(imageBuffer);
-            }
-            // Process the extracted text and return the necessary information as JSON
-            var idInvoice = await invoiceModel.getHighestIdInvoice(user);
-            if (idInvoice == null) {
-                idInvoice = {};
-            }
-            idInvoice = idInvoice.id != undefined ? idInvoice.id + 1 : 1;
-            invoiceInfo = ocrService.extractInvoiceInfo(text, user, idInvoice);
+        // Extract username from request body or set default
+        const username = req.body.username || "defaultUser";
 
-            await invoiceModel.insertInvoices(invoiceInfo);
+        if (!req.file) {
+            throw new Error('No file uploaded');
         }
+
+        const imageBuffer = req.file.buffer;
+        let text;
+
+        // Extract text from PDF or image using OCR service
+        if (req.file.mimetype === 'application/pdf') {
+            const pdfData = await pdf(imageBuffer);
+            text = processPdfText(pdfData.text);
+        } else {
+            text = await ocrService.performOCR(imageBuffer);
+        }
+        console.log(text);
+
+        let idInvoice = (await invoiceModel.getHighestIdInvoice(username)) || { id: 0 };
+        idInvoice = idInvoice.id + 1;
+
+        const invoiceInfo = ocrService.extractInvoiceInfo(text, username, idInvoice, text);
+
+        await invoiceModel.insertInvoices(invoiceInfo);
+
     } catch (error) {
         console.error('OCR Error:', error);
         res.status(500).json({ error: 'OCR process failed' });
     }
 });
+
 
 app.get('/analyzeInvoice', function (req, res) {
     var host = server.address().address;

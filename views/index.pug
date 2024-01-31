@@ -79,11 +79,15 @@ block content
                     th Articles
                     th HT
                     th TTC
+                    th Debug
                 tbody(data-bind='foreach: $data["invoices"]')
                   tr
-                    td(data-bind='text: creationDate')
-                    td(data-bind='text: sender')
-                    td(data-bind='text: customer')
+                    td
+                      span(data-bind='text: creationDate === null ? "Non disponible" : creationDate')
+                    td
+                      span(data-bind='text: sender === null ? "Non disponible" : sender')
+                    td
+                      span(data-bind='text: customer === null ? "Non disponible" : customer')
                     td
                       a(data-bind='text: articles === null ? "Aucun article" : "Articles", attr: { class : articles === null ? "" : "btn btn-primary", href: "#Articles" + id + username }' data-toggle='collapse')
                       div.row.collapse.hide(data-bind='attr: { id: "Articles" + id + username}')
@@ -93,6 +97,10 @@ block content
                             span(data-bind='text: "prix : "+price')
                     td(data-bind='text: totalWithoutTaxes')
                     td(data-bind='text: totalWithTaxes')
+                    td 
+                      a(data-bind='text: text === null ? "Aucun debug" : "Debug", attr: { class : text === null ? "" : "btn btn-primary", href: "#text" + id + username }' data-toggle='collapse')
+                      div.row.collapse.hide(data-bind='attr: { id: "text" + id + username}')
+                        div(data-bind='text: text')
       div.w-100
       br
       button.mx-auto.btn.btn-primary#refreshButton(type="button" onclick="refresh()") Raffraichir
